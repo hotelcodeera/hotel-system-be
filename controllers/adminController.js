@@ -2,6 +2,7 @@ const User = require("../models/User");
 const ErrorResponse = require("../utils/errorResponse");
 const Joi = require('joi');
 const UserRole = require("../helpers/enums/UserRole");
+const sendEmail = require('../utils/sendEmail');
 
 exports.addUser = async (req, res, next) => {
   const { username, email, firstName, lastName, userType } = req.body;
@@ -37,6 +38,16 @@ exports.addUser = async (req, res, next) => {
       lastName,
       userType,
     });
+
+    // try {
+    //     await sendEmail({
+    //       to: email,
+    //       subject: 'Welcome to Grading System',
+    //       text: `Hello, Your account is been created with us.<br</br>Email:-${email} <br</br> Password:-Kmit123$`,
+    //     });
+    //   } catch (err) {
+    //     console.log(err);
+    //   }
 
     res.status(201).json({
         success: true,

@@ -22,7 +22,7 @@ app.use(
 
 app.use('/api/v1/auth', require('./routes/authRoute'));
 app.use('/api/v1/admin', require('./routes/adminRoute'));
-// app.use('/api/v1/leagueAdmin', require('./routes/leagueAdminRoute'));
+app.use('/api/v1/professor', require('./routes/professorRoute'));
 // app.use('/api/v1/user', require('./routes/userRoute'));
 
 // Error Handler Middleware
