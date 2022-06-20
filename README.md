@@ -3,7 +3,7 @@
 Prequistes:-
 Node JS
 
-Build steps:-
-Perform npm install
-Perform npm run start
+## Build steps:-
+ - Perform npm install
+ - Perform npm run start
 
