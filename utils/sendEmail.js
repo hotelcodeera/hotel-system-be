@@ -4,8 +4,8 @@ const sendEmail = (options) => {
   const transporter = nodemailer.createTransport({
     service: "SendGrid",
     auth: {
-      user: "apiKey",
-      pass: "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",
+      user: "apikey",
+      pass: "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",
     },
   });
 
@@ -18,7 +18,7 @@ const sendEmail = (options) => {
 
   transporter.sendMail(mailOptions, function (err, info) {
     if (err) {
-      console.log(err);//Kmit@12345678901
+      console.log("send mail error", err);//Kmit@12345678901
     } else {
       console.log(info);
     }

@@ -56,7 +56,7 @@ exports.addExam = async (req, res, next) => {
     try {
       await sendEmail({
         to: user?.email,
-        subject: "League Confirmation",
+        subject: "GRADING SYSTEM: Exam created Successfully",
         text: message,
       });
     } catch (err) {
@@ -158,6 +158,16 @@ exports.registerForExam = async (req, res, next) => {
       updated: new Date().toISOString(),
       studentGrades: [],
     });
+
+    try {
+        await sendEmail({
+          to: user?.email,
+          subject: "GRADING SYSTEM: You are registered for the exam",
+          text: `Hi ${user?.firstName} ${user?.lastName}, <div>You are registered successfully for ${league?.name}</div>`,
+        });
+      } catch (err) {
+        console.log("send mail error", err);
+      }
 
     res.status(201).json({
       success: true,
@@ -330,12 +340,22 @@ exports.gradeStudent = async (req, res, next) => {
           "userDetails.password": 0,
           "userDetails.created": 0,
           "userDetails.updated": 0,
-          "userDetails.email": 0,
           "userDetails.__v": 0,
           __v: 0,
         },
       },
     ]);
+
+    try {
+        const examDetails = await Exam.findById(registration?.examId) 
+        await sendEmail({
+          to: currentRegistrations[0]?.userDetails?.email,
+          subject: "GRADING SYSTEM: You are Graded for the Exam",
+          text: `Hi ${currentRegistrations[0]?.userDetails?.firstName} ${currentRegistrations[0]?.userDetails?.lastName}, <div>You are graded for ${examDetails?.name}</div>`,
+        });
+      } catch (err) {
+        console.log("send mail error", err);
+      }
 
     res.status(201).json({
       success: true,
@@ -357,6 +377,19 @@ exports.removeRegistration = async (req, res, next) => {
     }
 
     await StudentRegistration.deleteOne({ _id: requestId });
+
+    try {
+        const userDetails = await User.findById(registration?.userId)
+        const examDetails = await Exam.findById(registration?.examId) 
+        await sendEmail({
+          to: userDetails?.email,
+          subject: "GRADING SYSTEM: You are registered for the exam",
+          text: `Hi ${userDetails?.firstName} ${userDetails?.lastName}, <div>You removed from ${examDetails?.name}</div>`,
+        });
+      } catch (err) {
+        console.log("send mail error", err);
+      }
+
     res.status(200).json({
       success: true,
       data: { result: "SUCCESS" },
