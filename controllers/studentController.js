@@ -27,7 +27,6 @@ exports.registerForExam = async (req, res, next) => {
     }
 
     const exam = await Exam.findById(examId);
-    console.log("exam", exam);
     if (!exam) {
       return next(new ErrorResponse("Exam Not found", 404, "Not found"));
     }
@@ -70,16 +69,17 @@ exports.findRegistration = async (req, res, next) => {
         return next(new ErrorResponse("User not found", 404));
       }
   
+      const exam = await Exam.findById(examId);
+      if (!exam) {
+        return next(new ErrorResponse("Exam Not found", 404, "Not found"));
+      }
+
+
+  
       const existinParticipation = await StudentRegistration.findOne({
         userId,
         examId,
       });
-  
-      const exam = await Exam.findById(examId);
-      console.log("exam", exam);
-      if (!exam) {
-        return next(new ErrorResponse("Exam Not found", 404, "Not found"));
-      }
   
       res.status(200).json({
         success: true,
