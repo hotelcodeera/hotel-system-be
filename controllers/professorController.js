@@ -161,7 +161,15 @@ exports.registerForExam = async (req, res, next) => {
 
     res.status(201).json({
       success: true,
-      data: userRegistrationDetails,
+      data: {
+        _id: userRegistrationDetails._id,
+        userId,
+        userName: user.username,
+        examId,
+        created: userRegistrationDetails.created,
+        updated: userRegistrationDetails.updated,
+        studentGrades: []
+      },
     });
   } catch (err) {
     next(err);

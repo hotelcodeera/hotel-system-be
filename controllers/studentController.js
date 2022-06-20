@@ -100,3 +100,26 @@ exports.findRegistration = async (req, res, next) => {
     }
   };
 
+  exports.getExams = async (req, res, next) => {
+    try {
+      const exams = await Exam.aggregate([
+        {
+          $project: {
+            __v: 0,
+          },
+        },
+        {
+          $sort: {
+            created: 1,
+          },
+        },
+      ]);
+      res.status(200).json({
+        success: true,
+        data: exams,
+      });
+    } catch (err) {
+      next(err);
+    }
+  };
+
