@@ -23,7 +23,7 @@ app.use(
 app.use('/api/v1/auth', require('./routes/authRoute'));
 app.use('/api/v1/admin', require('./routes/adminRoute'));
 app.use('/api/v1/professor', require('./routes/professorRoute'));
-// app.use('/api/v1/user', require('./routes/userRoute'));
+app.use('/api/v1/student', require('./routes/studentRoute'));
 
 // Error Handler Middleware
 app.use(errorHandler);

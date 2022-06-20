@@ -4,7 +4,10 @@ const {
   addExam,
   getCurrentUserExam,
   registerForExam,
-  getUnRegisteredUsers
+  getUnRegisteredUsers,
+  getAllRegistrations,
+  gradeStudent,
+  removeRegistration
 } = require('../controllers/professorController');
 const { professorProtect } = require('../middleware/auth');
 
@@ -12,6 +15,9 @@ router.route('/addExam').post(professorProtect, addExam);
 router.route('/getExams').get(professorProtect, getCurrentUserExam);
 router.route('/register').post(professorProtect, registerForExam);
 router.route('/fetchUnRegisterStudents/:examId').get(professorProtect, getUnRegisteredUsers);
+router.route('/fetchRegistrations/:examId').get(professorProtect, getAllRegistrations);
+router.route('/gradeStudent/:requestId').post(professorProtect, gradeStudent);
+router.route('/removeRegistration/:requestId').post(professorProtect, removeRegistration);
 // router.route('/getLeagueById/:leagueId').get(leagueAdminProtect, getLeagueById);
 // router.route('/addQuestion').post(leagueAdminProtect, addQuestion);
 // router.route('/getQuestionsByLeague/:leagueId').get(leagueAdminProtect, getQuestionByLeague);

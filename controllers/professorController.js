@@ -5,6 +5,7 @@ const ErrorResponse = require("../utils/errorResponse");
 const UserRole = require("../helpers/enums/UserRole");
 const sendEmail = require("../utils/sendEmail");
 const StudentRegistration = require("../models/StudentRegistration");
+const mongoose = require("mongoose");
 
 exports.addExam = async (req, res, next) => {
   try {
@@ -147,7 +148,7 @@ exports.registerForExam = async (req, res, next) => {
     const league = await Exam.findById(examId);
 
     if (!league) {
-      return next(new ErrorResponse("League Not found", 404, "Not found"));
+      return next(new ErrorResponse("Exam Not found", 404, "Not found"));
     }
 
     const userRegistrationDetails = await StudentRegistration.create({
@@ -180,7 +181,177 @@ exports.getUnRegisteredUsers = async (req, res, next) => {
     );
     res.status(200).json({
       success: true,
-      data: currentUsers?.length ? currentUsers.map(ele => {return {userName: ele.username, userId: ele._id}}) : [],
+      data: currentUsers?.length
+        ? currentUsers.map((ele) => {
+            return { userName: ele.username, userId: ele._id };
+          })
+        : [],
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.getAllRegistrations = async (req, res, next) => {
+  try {
+    const examId = req.params.examId;
+    const currentRegistrations = await StudentRegistration.aggregate([
+      {
+        $match: {
+          examId: mongoose.Types.ObjectId(examId),
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "userDetails",
+        },
+      },
+      {
+        $unwind: {
+          path: "$userDetails",
+        },
+      },
+      {
+        $project: {
+          "userDetails.userType": 0,
+          "userDetails.password": 0,
+          "userDetails.created": 0,
+          "userDetails.updated": 0,
+          "userDetails.email": 0,
+          "userDetails.__v": 0,
+          userId: 0,
+          __v: 0,
+        },
+      },
+    ]);
+    res.status(200).json({
+      success: true,
+      data: currentRegistrations,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.gradeStudent = async (req, res, next) => {
+  try {
+    const requestId = req.params.requestId;
+    const { userId, maths, physics, chemistry } = req.body;
+
+    const schema = Joi.object({
+      userId: Joi.string(),
+      maths: Joi.number().required(),
+      physics: Joi.number().required(),
+      chemistry: Joi.number().required(),
+    });
+
+    // schema options
+    const options = {
+      abortEarly: false, // include all errors
+      allowUnknown: true, // ignore unknown props
+      stripUnknown: true, // remove unknown props
+    };
+
+    const { error } = schema.validate(req.body, options);
+
+    if (error?.details) {
+      return next(
+        new ErrorResponse(
+          error?.details[0]?.message || "Bad Request",
+          400,
+          "ValidationError"
+        )
+      );
+    }
+
+    const registration = await StudentRegistration.findOne({ _id: requestId });
+
+    if (!registration) {
+      return next(new ErrorResponse("Registration not found", 404));
+    }
+
+    const studentGrades = [
+      {
+        subject: "maths",
+        grade: maths,
+      },
+      {
+        subject: "physics",
+        grade: physics,
+      },
+      {
+        subject: "chemistry",
+        grade: chemistry,
+      },
+    ];
+
+    await StudentRegistration.findByIdAndUpdate(
+      requestId,
+      {
+        studentGrades,
+        updated: new Date().toISOString(),
+      },
+      { useFindAndModify: false }
+    );
+
+    const currentRegistrations = await StudentRegistration.aggregate([
+      {
+        $match: {
+          _id: mongoose.Types.ObjectId(requestId),
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "userDetails",
+        },
+      },
+      {
+        $unwind: {
+          path: "$userDetails",
+        },
+      },
+      {
+        $project: {
+          "userDetails.userType": 0,
+          "userDetails.password": 0,
+          "userDetails.created": 0,
+          "userDetails.updated": 0,
+          "userDetails.email": 0,
+          "userDetails.__v": 0,
+          __v: 0,
+        },
+      },
+    ]);
+
+    res.status(201).json({
+      success: true,
+      data: currentRegistrations?.length ? currentRegistrations[0] : {},
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.removeRegistration = async (req, res, next) => {
+  try {
+    const requestId = req.params.requestId;
+
+    const registration = await StudentRegistration.findOne({ _id: requestId });
+
+    if (!registration) {
+      return next(new ErrorResponse("Registration not found", 404));
+    }
+
+    await StudentRegistration.deleteOne({ _id: requestId });
+    res.status(200).json({
+      success: true,
+      data: { result: "SUCCESS" },
     });
   } catch (err) {
     next(err);
