@@ -262,8 +262,8 @@ exports.gradeStudent = async (req, res, next) => {
     const schema = Joi.object({
       userId: Joi.string(),
       maths: Joi.number().required(),
-      physics: Joi.number().required(),
-      chemistry: Joi.number().required(),
+      physics: Joi.number(),
+      chemistry: Joi.number(),
     });
 
     // schema options
@@ -291,19 +291,21 @@ exports.gradeStudent = async (req, res, next) => {
       return next(new ErrorResponse("Registration not found", 404));
     }
 
+    const examDetails = await Exam.findById(registration?.examId) 
+
     const studentGrades = [
       {
-        subject: "maths",
+        subject: examDetails?.name,
         grade: maths,
       },
-      {
-        subject: "physics",
-        grade: physics,
-      },
-      {
-        subject: "chemistry",
-        grade: chemistry,
-      },
+      // {
+      //   subject: "physics",
+      //   grade: physics,
+      // },
+      // {
+      //   subject: "chemistry",
+      //   grade: chemistry,
+      // },
     ];
 
     await StudentRegistration.findByIdAndUpdate(
@@ -347,7 +349,7 @@ exports.gradeStudent = async (req, res, next) => {
     ]);
 
     try {
-        const examDetails = await Exam.findById(registration?.examId) 
+       
         await sendEmail({
           to: currentRegistrations[0]?.userDetails?.email,
           subject: "GRADING SYSTEM: You are Graded for the Exam",
