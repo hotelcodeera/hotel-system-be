@@ -48,7 +48,7 @@ exports.addUser = async (req, res, next) => {
       await sendEmail({
         to: email,
         subject: "Welcome to Grading System",
-        text: `Hello, Your account is been created with us.<br></br><div>Email :- ${email} <br></br> <p>Password:-Kmit123$</p><p>Please visit us at :- http://elb-ubunut1804-1643489929.us-east-1.elb.amazonaws.com </p></div>`,
+        text: `Hello, Your account is been created with us.<br></br><div>Email :- ${email} <br></br> <p>Password:-Kmit123$</p><p>Please visit us at :- https://nkafjdq7zf.execute-api.us-east-1.amazonaws.com/ </p></div>`,
       });
     } catch (err) {
       console.log("send mail error", err);
