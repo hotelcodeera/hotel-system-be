@@ -34,7 +34,6 @@ exports.protect = async (req, res, next) => {
   }
 };
 
-
 exports.adminProtect = async (req, res, next) => {
   let token;
 
@@ -58,8 +57,10 @@ exports.adminProtect = async (req, res, next) => {
       return next(new ErrorResponse("No user found with this id", 404));
     }
 
-    if(user?.userType !== UserRole.Admin){
-      return next(new ErrorResponse("User does not access for this resource", 401));
+    if (user?.userType !== UserRole.Admin) {
+      return next(
+        new ErrorResponse("User does not access for this resource", 401)
+      );
     }
 
     req.user = user;
@@ -93,8 +94,10 @@ exports.professorProtect = async (req, res, next) => {
       return next(new ErrorResponse("No user found with this id", 404));
     }
 
-    if(user?.userType !== UserRole.Professor){
-      return next(new ErrorResponse("User does not access for this resource", 401));
+    if (user?.userType !== UserRole.Staff) {
+      return next(
+        new ErrorResponse("User does not access for this resource", 401)
+      );
     }
 
     req.user = user;

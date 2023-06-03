@@ -30,7 +30,7 @@ const UserSchema = new mongoose.Schema({
   },
   userType: {
     type: String,
-    enum: ['USER', 'ADMIN', 'PROFESSOR',],
+    enum: ["USER", "ADMIN", "STAFF"],
     default: "USER",
   },
   created: { type: String },
@@ -52,18 +52,22 @@ UserSchema.methods.matchPassword = async function (password) {
 };
 
 UserSchema.methods.getSignedJwtToken = function () {
-  return jwt.sign({ 
-      _id: this._id, 
-      id: this._id, 
+  return jwt.sign(
+    {
+      _id: this._id,
+      id: this._id,
       userType: this.userType,
       userStatus: this.userStatus,
       username: this.username,
       firstName: this.firstName,
       lastName: this.lastName,
       email: this.email,
-    }, "GRADINGSYSTEM", {
-    expiresIn: "50min",
-  });
+    },
+    "GRADINGSYSTEM",
+    {
+      expiresIn: "50min",
+    }
+  );
 };
 
 UserSchema.methods.getResetPasswordToken = function () {

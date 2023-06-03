@@ -1,8 +1,11 @@
 const Joi = require("joi");
 const Exam = require("../models/Exam");
+const Item = require("../models/Items");
+const Orders = require("../models/Orders");
 const User = require("../models/User");
 const ErrorResponse = require("../utils/errorResponse");
 const StudentRegistration = require("../models/StudentRegistration");
+const OrderStatus = require("../helpers/enums/Orderstatus");
 
 exports.registerForExam = async (req, res, next) => {
   try {
@@ -58,68 +61,108 @@ exports.registerForExam = async (req, res, next) => {
   }
 };
 
+exports.orderItem = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const productId = req.params.productId;
+    const { quantity } = req.body;
+
+    const user = await User.findOne({ _id: userId });
+
+    if (!user) {
+      return next(new ErrorResponse("User not found", 404));
+    }
+
+    const exam = await Item.findById(productId);
+    if (!exam) {
+      return next(new ErrorResponse("Item Not found", 404, "Not found"));
+    }
+
+    const userRegistrationDetails = await Orders.create({
+      productId,
+      userId,
+      quantity,
+      orderStatus: OrderStatus.Pending,
+      created: new Date().toISOString(),
+      updated: new Date().toISOString(),
+    });
+
+    res.status(201).json({
+      success: true,
+      data: {
+        updated: userRegistrationDetails.updated,
+        _id: userRegistrationDetails._id,
+        userId,
+        productId,
+        quantity,
+        created: userRegistrationDetails.created,
+        orderStatus: OrderStatus.Pending,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.findRegistration = async (req, res, next) => {
-    try {
-      const userId = req.user._id;
-      const examId = req.params.examId;
-  
-      const user = await User.findOne({ _id: userId });
-  
-      if (!user) {
-        return next(new ErrorResponse("User not found", 404));
-      }
-  
-      const exam = await Exam.findById(examId);
-      if (!exam) {
-        return next(new ErrorResponse("Exam Not found", 404, "Not found"));
-      }
+  try {
+    const userId = req.user._id;
+    const examId = req.params.examId;
 
+    const user = await User.findOne({ _id: userId });
 
-  
-      const existinParticipation = await StudentRegistration.findOne({
+    if (!user) {
+      return next(new ErrorResponse("User not found", 404));
+    }
+
+    const exam = await Exam.findById(examId);
+    if (!exam) {
+      return next(new ErrorResponse("Exam Not found", 404, "Not found"));
+    }
+
+    const existinParticipation = await StudentRegistration.findOne({
+      userId,
+      examId,
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        updated: existinParticipation?.updated,
+        _id: existinParticipation?._id || "",
         userId,
         examId,
-      });
-  
-      res.status(200).json({
-        success: true,
-        data: {
-          updated: existinParticipation?.updated,
-          _id: existinParticipation?._id || "",
-          userId,
-          examId,
-          created: existinParticipation?.created,
-          studentGrades: existinParticipation?.studentGrades || [],
-          name: exam.name,
-          description: exam.description,
-          isNotRegistered: !existinParticipation?._id,
-        },
-      });
-    } catch (err) {
-      next(err);
-    }
-  };
+        created: existinParticipation?.created,
+        studentGrades: existinParticipation?.studentGrades || [],
+        name: exam.name,
+        description: exam.description,
+        isNotRegistered: !existinParticipation?._id,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 
-  exports.getExams = async (req, res, next) => {
-    try {
-      const exams = await Exam.aggregate([
-        {
-          $project: {
-            __v: 0,
-          },
+exports.getExams = async (req, res, next) => {
+  try {
+    const exams = await Exam.aggregate([
+      {
+        $project: {
+          __v: 0,
         },
-        {
-          $sort: {
-            created: 1,
-          },
+      },
+      {
+        $sort: {
+          created: 1,
         },
-      ]);
-      res.status(200).json({
-        success: true,
-        data: exams,
-      });
-    } catch (err) {
-      next(err);
-    }
-  };
-
+      },
+    ]);
+    res.status(200).json({
+      success: true,
+      data: exams,
+    });
+  } catch (err) {
+    next(err);
+  }
+};

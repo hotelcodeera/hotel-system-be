@@ -1,5 +1,5 @@
 {
-  "name": "grading-system-be",
+  "name": "hotel-system-be",
   "version": "0.0.1",
   "description": "this project is to support backend functionality for grading UI",
   "main": "server.js",

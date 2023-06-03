@@ -2,12 +2,15 @@ const mongoose = require("mongoose");
 
 const connectDB = async () => {
   try {
-    await mongoose.connect("mongodb+srv://user1:kmit@cluster0.r33u5.mongodb.net/myFirstDatabase?retryWrites=true&w=majority", {
-      useNewUrlParser: true,
-      useFindAndModify: true,
-      useUnifiedTopology: true,
-      useCreateIndex: true,
-    });
+    await mongoose.connect(
+      "mongodb+srv://user1:kmit@cluster0.r33u5.mongodb.net/hotelsystem?retryWrites=true&w=majority",
+      {
+        useNewUrlParser: true,
+        useFindAndModify: true,
+        useUnifiedTopology: true,
+        useCreateIndex: true,
+      }
+    );
 
     console.log("MongoDB Connection Success 👍");
   } catch (error) {
