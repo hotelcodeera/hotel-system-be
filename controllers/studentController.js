@@ -6,6 +6,7 @@ const User = require("../models/User");
 const ErrorResponse = require("../utils/errorResponse");
 const StudentRegistration = require("../models/StudentRegistration");
 const OrderStatus = require("../helpers/enums/Orderstatus");
+const mongoose = require("mongoose");
 
 exports.registerForExam = async (req, res, next) => {
   try {
@@ -104,6 +105,78 @@ exports.orderItem = async (req, res, next) => {
   }
 };
 
+exports.getAllUserOrders = async (req, res, next) => {
+  try {
+    const userDetails = req.user;
+    const userId = userDetails._id;
+    const currentRegistrations = await Orders.aggregate([
+      {
+        $match: {
+          userId: mongoose.Types.ObjectId(userId),
+        },
+      },
+      {
+        $sort: {
+          created: -1,
+        },
+      },
+      {
+        $lookup: {
+          from: "items",
+          localField: "productId",
+          foreignField: "_id",
+          as: "productDetails",
+        },
+      },
+      {
+        $unwind: {
+          path: "$productDetails",
+        },
+      },
+      {
+        $project: {
+          "productDetails.__v": 0,
+          __v: 0,
+        },
+      },
+    ]);
+    res.status(200).json({
+      success: true,
+      data: currentRegistrations,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.getProducts = async (req, res, next) => {
+  try {
+    const exams = await Item.aggregate([
+      {
+        $match: {
+          outOfStock: false,
+        },
+      },
+      {
+        $project: {
+          __v: 0,
+        },
+      },
+      {
+        $sort: {
+          created: 1,
+        },
+      },
+    ]);
+    res.status(200).json({
+      success: true,
+      data: exams,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.findRegistration = async (req, res, next) => {
   try {
     const userId = req.user._id;
@@ -152,6 +225,7 @@ exports.getExams = async (req, res, next) => {
           __v: 0,
         },
       },
+
       {
         $sort: {
           created: 1,
