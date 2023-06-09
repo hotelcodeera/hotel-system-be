@@ -68,6 +68,12 @@ exports.orderItem = async (req, res, next) => {
     const productId = req.params.productId;
     const { quantity } = req.body;
 
+    if (!Number(quantity) || Number(quantity) < 0) {
+      return next(
+        new ErrorResponse("Quantity should be greater than zero", 400)
+      );
+    }
+
     const user = await User.findOne({ _id: userId });
 
     if (!user) {

@@ -218,7 +218,7 @@ exports.updateOrderStatus = async (req, res, next) => {
     try {
       await sendEmail({
         to: currentOrderDetails[0]?.userDetails?.email,
-        subject: "Hote Code ERA: You are order is updated",
+        subject: "Hotel Code ERA: You are order is updated",
         text: `Hi ${currentOrderDetails[0]?.userDetails?.firstName} ${currentOrderDetails[0]?.userDetails?.lastName}, <div>You order status is updated to ${orderStatus}</div>`,
       });
     } catch (err) {
