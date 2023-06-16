@@ -59,7 +59,7 @@ exports.addExam = async (req, res, next) => {
     try {
       await sendEmail({
         to: user?.email,
-        subject: "GRADING SYSTEM: Exam created Successfully",
+        subject: "Hotel Code Era: Exam created Successfully",
         text: message,
       });
     } catch (err) {
@@ -215,6 +215,7 @@ exports.updateOrderStatus = async (req, res, next) => {
         },
       },
     ]);
+    console.log(currentOrderDetails[0]);
     try {
       await sendEmail({
         to: currentOrderDetails[0]?.userDetails?.email,
@@ -440,7 +441,7 @@ exports.registerForExam = async (req, res, next) => {
     try {
       await sendEmail({
         to: user?.email,
-        subject: "GRADING SYSTEM: You are registered for the exam",
+        subject: "Hotel Code Era: You are registered for the exam",
         text: `Hi ${user?.firstName} ${user?.lastName}, <div>You are registered successfully for ${league?.name}</div>`,
       });
     } catch (err) {
@@ -629,7 +630,7 @@ exports.gradeStudent = async (req, res, next) => {
     try {
       await sendEmail({
         to: currentRegistrations[0]?.userDetails?.email,
-        subject: "GRADING SYSTEM: You are Graded for the Exam",
+        subject: "Hotel Code Era: You are Graded for the Exam",
         text: `Hi ${currentRegistrations[0]?.userDetails?.firstName} ${currentRegistrations[0]?.userDetails?.lastName}, <div>You are graded for ${examDetails?.name}</div>`,
       });
     } catch (err) {
@@ -662,7 +663,7 @@ exports.removeRegistration = async (req, res, next) => {
       const examDetails = await Exam.findById(registration?.examId);
       await sendEmail({
         to: userDetails?.email,
-        subject: "GRADING SYSTEM: You are registered for the exam",
+        subject: "Hotel Code Era: You are registered for the exam",
         text: `Hi ${userDetails?.firstName} ${userDetails?.lastName}, <div>You removed from ${examDetails?.name}</div>`,
       });
     } catch (err) {
