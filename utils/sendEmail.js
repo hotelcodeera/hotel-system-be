@@ -5,12 +5,12 @@ const sendEmail = (options) => {
     service: "SendGrid",
     auth: {
       user: "apikey",
-      pass: "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",
+      pass: "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",
     },
   });
 
   const mailOptions = {
-    from: "sgsheadofdepartment@gmail.com",
+    from: "adm72024@gmail.com",
     to: options.to,
     subject: options.subject,
     html: options.text,
@@ -18,7 +18,7 @@ const sendEmail = (options) => {
 
   transporter.sendMail(mailOptions, function (err, info) {
     if (err) {
-      console.log("send mail error", err);//Kmit@12345678901
+      console.log("send mail error", err); //Kmit@12345678901
     } else {
       console.log(info);
     }
