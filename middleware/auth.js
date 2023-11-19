@@ -18,7 +18,7 @@ exports.protect = async (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, "GRADINGSYSTEM");
+    const decoded = jwt.verify(token, "CODEERA");
 
     const user = await User.findById(decoded.id);
 
@@ -49,7 +49,7 @@ exports.adminProtect = async (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, "GRADINGSYSTEM");
+    const decoded = jwt.verify(token, "CODEERA");
 
     const user = await User.findById(decoded.id);
 
@@ -71,7 +71,7 @@ exports.adminProtect = async (req, res, next) => {
   }
 };
 
-exports.professorProtect = async (req, res, next) => {
+exports.staffProtect = async (req, res, next) => {
   let token;
 
   if (
@@ -86,7 +86,7 @@ exports.professorProtect = async (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, "GRADINGSYSTEM");
+    const decoded = jwt.verify(token, "CODEERA");
 
     const user = await User.findById(decoded.id);
 

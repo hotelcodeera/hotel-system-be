@@ -63,7 +63,7 @@ UserSchema.methods.getSignedJwtToken = function () {
       lastName: this.lastName,
       email: this.email,
     },
-    "GRADINGSYSTEM",
+    "CODEERA",
     {
       expiresIn: "50min",
     }

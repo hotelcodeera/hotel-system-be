@@ -1,15 +1,6 @@
 const { number } = require("joi");
 const mongoose = require("mongoose");
 
-// export interface Exam {
-//     _id: string;
-//     name: string;
-//     description: string;
-//     userId: string;
-//     created?: string;
-//     updated?: string;
-//   }
-
 const ItemSchema = new mongoose.Schema({
   name: {
     type: String,
