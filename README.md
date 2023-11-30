@@ -1,4 +1,4 @@
-# grading-system-be
+# hotel-system-be
 
 Prequistes:-
 Node JS
